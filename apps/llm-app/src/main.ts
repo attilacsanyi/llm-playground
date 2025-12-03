@@ -60,7 +60,7 @@ async function main(): Promise<void> {
 }
 
 // Run the main function
-main().catch((error) => {
+main().catch(error => {
   console.error('Unhandled error:', error);
   process.exit(1);
 });
