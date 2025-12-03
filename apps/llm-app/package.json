@@ -109,5 +109,8 @@
       }
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "@langchain/core": "1.1.2",
+    "@langchain/ollama": "1.0.3"
+  }
 }
