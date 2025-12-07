@@ -1,11 +1,12 @@
-import { HumanMessage } from '@langchain/core/messages';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { ChatOllama } from '@langchain/ollama';
-import { z } from 'zod';
-import { parseArgs } from './args';
+import { Args, parseArgs } from './args';
 import { env } from './env';
 
 const main = async (): Promise<void> => {
   const args = parseArgs();
+
+  const { format, tone, prompt } = args;
 
   try {
     const llm = new ChatOllama({
@@ -18,19 +19,37 @@ const main = async (): Promise<void> => {
     console.log('🤖 LangChain.js with Ollama');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-    const userPrompt: HumanMessage = new HumanMessage(
-      'Explain what LangChain is in one sentence:'
-    );
-    console.log(`📝 Prompt: ${userPrompt.content}\n`);
+    console.log(`📝 Prompt: ${prompt}\n`);
+    console.log(`📋 Format: ${format}`);
+    console.log(`🎭 Tone: ${tone}`);
+    console.log();
 
-    const responseSchema = z.object({
-      data: z.string().describe('The response to the user prompt'),
-    });
+    // Define tone instructions
+    const toneInstructions: Record<Args['tone'], string> = {
+      grumpy:
+        'You are a grumpy assistant. Respond in a sarcastic, grumpy, and slightly annoyed manner.',
+      sceptic:
+        'You are a skeptical assistant. Respond with critical thinking, questioning assumptions, and maintaining a healthy dose of skepticism.',
+      positive:
+        'You are an enthusiastic and positive assistant. Respond in an upbeat, optimistic, and encouraging manner.',
+    };
 
-    const structuredLLM = llm.withStructuredOutput(responseSchema);
+    // Define format instructions
+    const formatInstructions: Record<Args['format'], string> = {
+      json: 'Respond in valid JSON format.',
+      xml: 'Respond in valid XML format.',
+      yml: 'Respond in valid YAML format.',
+    };
 
-    const response = await structuredLLM.invoke([userPrompt]);
-    console.log(`💬 Response: ${response.data}\n`);
+    const systemMessageContent = `${toneInstructions[tone]}\n\n${formatInstructions[format]}`;
+    const systemMessage = new SystemMessage(systemMessageContent);
+    const userPrompt = new HumanMessage(prompt);
+
+    const response = await llm.invoke([systemMessage, userPrompt]);
+
+    console.log(`💬 Response (${args.format}):`);
+    console.log(response.content);
+    console.log();
   } catch (error) {
     if (error instanceof Error) {
       console.error('❌ Error:', error.message);

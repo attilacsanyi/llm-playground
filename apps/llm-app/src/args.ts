@@ -11,7 +11,7 @@ const argsSchema = z.object({
   prompt: z.string().min(1, 'Prompt is required'),
 });
 
-type Args = z.infer<typeof argsSchema>;
+export type Args = z.infer<typeof argsSchema>;
 
 /**
  * Parse and validate command line arguments using yargs + Zod
