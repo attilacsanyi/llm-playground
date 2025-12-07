@@ -4,9 +4,6 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/llm-app-e2e"
-    },
-    {
       "path": "./apps/llm-app"
     }
   ]
