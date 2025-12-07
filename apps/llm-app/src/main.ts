@@ -1,3 +1,4 @@
+import { HumanMessage } from '@langchain/core/messages';
 import { Ollama } from '@langchain/ollama';
 
 const main = async (): Promise<void> => {
@@ -12,11 +13,12 @@ const main = async (): Promise<void> => {
     console.log('🤖 LangChain.js with Ollama');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-    // Example 1: Simple text completion
-    const prompt = 'Explain what LangChain is in one sentence:';
-    console.log(`📝 Prompt: ${prompt}\n`);
+    const userPrompt: HumanMessage = new HumanMessage(
+      'Explain what LangChain is in one sentence:'
+    );
+    console.log(`📝 Prompt: ${userPrompt.content}\n`);
 
-    const response: string = await llm.invoke(prompt);
+    const response: string = await llm.invoke([userPrompt]);
     console.log(`💬 Response: ${response}\n`);
   } catch (error) {
     if (error instanceof Error) {
