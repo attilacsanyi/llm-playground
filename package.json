@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "migrate": "npx nx migrate latest",
+    "migrate:run": "npx nx migrate --run-migrations",
+    "build": "nx affected:build",
+    "test": "nx affected:test",
+    "lint": "nx affected:lint --fix",
     "prepare": "husky",
     "postinstall": "husky",
     "lint-staged": "lint-staged --config lint-staged.config.mjs"
