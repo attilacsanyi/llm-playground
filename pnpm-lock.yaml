@@ -11,6 +11,9 @@ importers:
       axios:
         specifier: 1.6.0
         version: 1.6.0
+      zod:
+        specifier: 4.1.13
+        version: 4.1.13
     devDependencies:
       '@eslint/js':
         specifier: 9.8.0
