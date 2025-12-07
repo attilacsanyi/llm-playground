@@ -1,12 +1,13 @@
 import { HumanMessage } from '@langchain/core/messages';
 import { ChatOllama } from '@langchain/ollama';
 import { z } from 'zod';
+import { env } from './env';
 
 const main = async (): Promise<void> => {
   try {
     const llm = new ChatOllama({
-      model: 'gpt-oss:20b', // Supports tool calling
-      baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
+      model: env.OLLAMA_MODEL,
+      baseUrl: env.OLLAMA_BASE_URL,
       temperature: 0.7,
       maxRetries: 2,
     });
