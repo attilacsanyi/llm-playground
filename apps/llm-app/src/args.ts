@@ -3,7 +3,7 @@ import { hideBin } from 'yargs/helpers';
 import { prettifyError, z } from 'zod';
 
 /**
- * Zod schema for CLI arguments validation
+ * CLI arguments schema
  */
 const argsSchema = z.object({
   format: z.enum(['json', 'xml', 'yml']).default('json'),
