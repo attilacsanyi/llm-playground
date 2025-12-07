@@ -21,23 +21,45 @@ A Node.js application using LangChain.js with Ollama to run language models loca
 
 ### Running the Application
 
-Once Ollama is running and the model is pulled:
+Once Ollama is running and the model is pulled, you can run the application with a prompt:
 
 ```sh
-pnpm nx serve llm-app
+pnpm nx serve llm-app --args="'Your prompt here'"
 ```
 
-Or using npx:
+#### Example with Options
 
 ```sh
-npx nx serve llm-app
+pnpm nx serve llm-app --args="'Random user contact card including just the following keys name and email and age. Not include any comment.',--f=yml,--t=sceptic"
+```
+
+#### Command Line Arguments
+
+The application accepts the following arguments:
+
+- **`<prompt>`** (required): The prompt to send to the LLM
+- **`--format, -f`** (optional): Specify the LLM response format. Choices: `json` (default), `xml`, `yml`
+- **`--tone, -t`** (optional): Specify the LLM response tone. Choices: `grumpy`, `sceptic`, `positive` (default)
+
+#### Getting Help
+
+To see all available options and their descriptions, you can view the help:
+
+```sh
+pnpm nx serve llm-app --args="--help"
+```
+
+Or using the short form:
+
+```sh
+pnpm nx serve llm-app --args="-h"
 ```
 
 The application will:
 
 - Connect to Ollama running at `http://localhost:11434`
 - Use the `gpt-oss:20b` model for text generation
-- Demonstrate both simple text completion and streaming responses
+- Process your prompt and return a response in the specified format and tone
 
 ### Changing the Model
 
