@@ -1,9 +1,12 @@
 import { HumanMessage } from '@langchain/core/messages';
 import { ChatOllama } from '@langchain/ollama';
 import { z } from 'zod';
+import { parseArgs } from './args';
 import { env } from './env';
 
 const main = async (): Promise<void> => {
+  const args = parseArgs();
+
   try {
     const llm = new ChatOllama({
       model: env.OLLAMA_MODEL,
