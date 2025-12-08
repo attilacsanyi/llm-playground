@@ -1,3 +1,5 @@
+[![CI](https://github.com/attilacsanyi/llm-playground/actions/workflows/ci.yml/badge.svg)](https://github.com/attilacsanyi/llm-playground/actions/workflows/ci.yml)
+
 # LlmPlayground
 
 A Node.js application using LangChain.js with Ollama to run language models locally.
