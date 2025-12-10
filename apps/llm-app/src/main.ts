@@ -1,5 +1,7 @@
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { ChatOllama } from '@langchain/ollama';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { Args, parseArgs } from './args';
 import { env } from './env';
 
@@ -41,7 +43,19 @@ const main = async (): Promise<void> => {
       yml: 'Respond in valid YAML format.',
     };
 
-    const systemMessageContent = `${toneInstructions[tone]}\n\n${formatInstructions[format]}`;
+    // signal-forms.md content read
+    const signalFormsContent = readFileSync(
+      join(process.cwd(), 'apps/llm-app/src/content/signal-forms.md'),
+      'utf8'
+    );
+
+    // Instruction to use knowloedge from signal-forms.md
+    const signalFormsInstructions = `
+      You are a knowledgable assistant and your knowledge base is the content of the file signal-forms.md.
+      ${signalFormsContent}
+    `;
+
+    const systemMessageContent = `${signalFormsInstructions}\n\n${toneInstructions[tone]}\n\n${formatInstructions[format]}`;
     const systemMessage = new SystemMessage(systemMessageContent);
     const userPrompt = new HumanMessage(prompt);
 
