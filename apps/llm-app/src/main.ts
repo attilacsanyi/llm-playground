@@ -50,12 +50,19 @@ const main = async (): Promise<void> => {
     );
 
     // Instruction to use knowloedge from signal-forms.md
-    const signalFormsInstructions = `
+    const knowledgeInstructions = `
+      ## Role
       You are a knowledgable assistant and your knowledge base is the content of the file signal-forms.md.
+
+      ## Knowledge Base
       ${signalFormsContent}
+
+      ## Response with edge cases
+      Just answer the question based on the knowledge base.
+      If the question is not related to the knowledge base, say that you don't know.
     `;
 
-    const systemMessageContent = `${signalFormsInstructions}\n\n${toneInstructions[tone]}\n\n${formatInstructions[format]}`;
+    const systemMessageContent = `${knowledgeInstructions}\n\n${toneInstructions[tone]}\n\n${formatInstructions[format]}`;
     const systemMessage = new SystemMessage(systemMessageContent);
     const userPrompt = new HumanMessage(prompt);
 
