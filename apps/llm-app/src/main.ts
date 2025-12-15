@@ -1,23 +1,11 @@
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
-import { ChatOllama } from '@langchain/ollama';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { Args, parseArgs } from './args';
-import { env } from './env';
+import { parseArgs } from './args';
+import { runSignalFormsKB } from './llm/scripts/signalFormsKB';
 
 const main = async (): Promise<void> => {
   const args = parseArgs();
-
   const { format, tone, prompt } = args;
 
   try {
-    const llm = new ChatOllama({
-      model: env.OLLAMA_MODEL,
-      baseUrl: env.OLLAMA_BASE_URL,
-      temperature: 0.7,
-      maxRetries: 2,
-    });
-
     console.log('🤖 LangChain.js with Ollama');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
@@ -26,72 +14,10 @@ const main = async (): Promise<void> => {
     console.log(`🎭 Tone: ${tone}`);
     console.log();
 
-    // Define tone instructions
-    const toneInstructions: Record<Args['tone'], string> = {
-      grumpy:
-        'You are a grumpy assistant. Respond in a sarcastic, grumpy, and slightly annoyed manner.',
-      sceptic:
-        'You are a skeptical assistant. Respond with critical thinking, questioning assumptions, and maintaining a healthy dose of skepticism.',
-      positive:
-        'You are an enthusiastic and positive assistant. Respond in an upbeat, optimistic, and encouraging manner.',
-    };
+    const content = await runSignalFormsKB({ prompt, tone, format });
 
-    // Define format instructions
-    const formatInstructions: Record<Args['format'], string> = {
-      json: 'Respond in valid JSON format.',
-      xml: 'Respond in valid XML format.',
-      yml: 'Respond in valid YAML format.',
-    };
-
-    // signal-forms.md content read
-    const signalFormsContent = readFileSync(
-      join(process.cwd(), 'apps/llm-app/src/content/signal-forms.md'),
-      'utf8'
-    );
-
-    // Instruction to use knowledge from signal-forms.md
-    const knowledgeInstructions = `
-      ## Role
-      You are a knowledgable assistant and your knowledge base is the content of the file signal-forms.md.
-
-      ## Knowledge Base
-      ${signalFormsContent}
-
-      ## Response with edge cases
-      Just answer the question based on the knowledge base.
-      If the question is not related to the knowledge base, say that you don't know.
-    `;
-    /**
-     * Eval run test framework (jest)
-     * pnpm run eval:llm-app --args="'What is the main purpose of Signal Forms?'"
-     *
-     * Testing style: given, when then for each test
-     * given: prompt will be given to the llm
-     * when: execSync(llm-app --args="'What is the main purpose of Signal Forms?'")
-     * then:
-     *
-     * confident level
-     * provide reasoning for the answer should be in the response
-     * response structure: (order matters)
-     * {
-     *  "reasoning": "The main purpose of Signal Forms is to provide a way to manage form state using Angular signals.",
-     *  "answer": "The main purpose of Signal Forms is to provide a way to manage form state using Angular signals."
-     *  "confidentLevel": "0..1",// know vs do not know confidence level (system prompt guard if not sure return 0 percent)
-     * }
-     *
-     * it('test description', () => {
-     *
-     * }
-     */
-
-    const systemMessageContent = `${knowledgeInstructions}\n\n${toneInstructions[tone]}\n\n${formatInstructions[format]}`;
-    const systemMessage = new SystemMessage(systemMessageContent);
-    const userPrompt = new HumanMessage(prompt);
-
-    const response = await llm.invoke([systemMessage, userPrompt]);
-
-    console.log(`💬 Response (${args.format}):`);
-    console.log(response.content);
+    console.log(`💬 Response (${format}):`);
+    console.log(content);
     console.log();
   } catch (error) {
     if (error instanceof Error) {
