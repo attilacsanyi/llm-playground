@@ -16,8 +16,10 @@ export const runSignalFormsKB = async (
 
   const llm = createLlmClient();
 
+  // Use __dirname to resolve path relative to this file
+  // Works in both test (src) and production (dist) contexts
   const signalFormsContent = readFileSync(
-    join(process.cwd(), 'apps/llm-app/src/content/signal-forms.md'),
+    join(__dirname, '../../content/signal-forms.md'),
     'utf8'
   );
 

@@ -20,7 +20,12 @@
           "main": "apps/llm-app/src/main.ts",
           "tsConfig": "apps/llm-app/tsconfig.app.json",
           "assets": [
-            "apps/llm-app/src/assets"
+            "apps/llm-app/src/assets",
+            {
+              "input": "apps/llm-app/src/content",
+              "glob": "**/*",
+              "output": "apps/llm-app/src/content"
+            }
           ],
           "esbuildOptions": {
             "sourcemap": true,
