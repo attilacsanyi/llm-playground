@@ -49,7 +49,7 @@ const main = async (): Promise<void> => {
       'utf8'
     );
 
-    // Instruction to use knowloedge from signal-forms.md
+    // Instruction to use knowledge from signal-forms.md
     const knowledgeInstructions = `
       ## Role
       You are a knowledgable assistant and your knowledge base is the content of the file signal-forms.md.
@@ -61,6 +61,28 @@ const main = async (): Promise<void> => {
       Just answer the question based on the knowledge base.
       If the question is not related to the knowledge base, say that you don't know.
     `;
+    /**
+     * Eval run test framework (jest)
+     * pnpm run eval:llm-app --args="'What is the main purpose of Signal Forms?'"
+     *
+     * Testing style: given, when then for each test
+     * given: prompt will be given to the llm
+     * when: execSync(llm-app --args="'What is the main purpose of Signal Forms?'")
+     * then:
+     *
+     * confident level
+     * provide reasoning for the answer should be in the response
+     * response structure: (order matters)
+     * {
+     *  "reasoning": "The main purpose of Signal Forms is to provide a way to manage form state using Angular signals.",
+     *  "answer": "The main purpose of Signal Forms is to provide a way to manage form state using Angular signals."
+     *  "confidentLevel": "0..1",// know vs do not know confidence level (system prompt guard if not sure return 0 percent)
+     * }
+     *
+     * it('test description', () => {
+     *
+     * }
+     */
 
     const systemMessageContent = `${knowledgeInstructions}\n\n${toneInstructions[tone]}\n\n${formatInstructions[format]}`;
     const systemMessage = new SystemMessage(systemMessageContent);
