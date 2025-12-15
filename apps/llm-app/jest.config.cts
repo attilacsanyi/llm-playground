@@ -18,4 +18,9 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: 'test-output/jest/coverage',
+  transformIgnorePatterns: [
+    // Transform ESM-only packages from @langchain and its dependencies
+    // Pattern handles both standard and pnpm (.pnpm/pkg@version/node_modules/pkg) structures
+    'node_modules/(?!.*(@langchain|p-retry|is-network-error|retry))',
+  ],
 };
