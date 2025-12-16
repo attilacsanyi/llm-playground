@@ -9,6 +9,8 @@ import type { BaseLlmOptions } from '../types';
 
 export type SignalFormsKBOptions = BaseLlmOptions;
 
+export const unrelatedQuestionAnswer = "I don't know";
+
 export const runSignalFormsKB = async (
   options: SignalFormsKBOptions
 ): Promise<string> => {
@@ -23,41 +25,31 @@ export const runSignalFormsKB = async (
     'utf8'
   );
 
+  const knowledgeBase = signalFormsContent;
+
   // Instruction to use knowledge from signal-forms.md
   const knowledgeInstructions = `
     ## Role
     You are a knowledgeable assistant and your knowledge base is the content of the file signal-forms.md.
 
     ## Knowledge Base
-    ${signalFormsContent}
+    ${knowledgeBase}
 
     ## Response with edge cases
-    Just answer the question based on the knowledge base.
-    If the question is not related to the knowledge base, say that you don't know.
-  `;
+    1. Just answer the question based on the knowledge base
+    2. If the question is not related to the knowledge base, say this exactly: "${unrelatedQuestionAnswer}"
 
-  /**
-   * Eval run test framework (jest)
-   * pnpm run eval:llm-app --args="'What is the main purpose of Signal Forms?'"
-   *
-   * Testing style: given, when then for each test
-   * given: prompt will be given to the llm
-   * when: execSync(llm-app --args="'What is the main purpose of Signal Forms?'")
-   * then:
-   *
-   * confident level
-   * provide reasoning for the answer should be in the response
-   * response structure: (order matters)
-   * {
-   *  "reasoning": "The main purpose of Signal Forms is to provide a way to manage form state using Angular signals.",
-   *  "answer": "The main purpose of Signal Forms is to provide a way to manage form state using Angular signals."
-   *  "confidentLevel": "0..1",// know vs do not know confidence level (system prompt guard if not sure return 0 percent)
-   * }
-   *
-   * it('test description', () => {
-   *
-   * }
-   */
+    ## Response structure constraints
+
+    Your response have to contain the following parts in this order:
+
+    1. reasoning: A short 1-2 sentence explanation on why you made this answer
+    2. answer: The answer to the user's question
+    3. confidentLevel: number between 0 and 1 which represents how certain you are if you know the answer
+
+    ### Rules and edge cases
+    1. If your answer was ${unrelatedQuestionAnswer} then you should return 0 confidence level
+  `;
 
   const systemMessageContent = `
 ${knowledgeInstructions}
