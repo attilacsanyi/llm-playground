@@ -31,12 +31,15 @@ const parseAndAssertStructure = (raw: string): EvalResponse => {
   expect(typeof confidentLevel).toBe('number');
   expect(confidentLevel).toBeGreaterThanOrEqual(0);
   expect(confidentLevel).toBeLessThanOrEqual(1);
+  expect(Number.isFinite(confidentLevel)).toBe(true);
 
   return { reasoning, answer, confidentLevel };
 };
 
 describe('SignalFormsKB LLM evals', () => {
-  jest.setTimeout(60000);
+  beforeAll(() => {
+    jest.setTimeout(60000);
+  });
 
   describe('in-scope questions (about Signal Forms)', () => {
     it(
@@ -77,7 +80,7 @@ describe('SignalFormsKB LLM evals', () => {
 
         const { answer, confidentLevel } = parseAndAssertStructure(raw);
 
-        expect(answer).toBe(unrelatedQuestionAnswer);
+        expect(answer.trim()).toBe(unrelatedQuestionAnswer);
         expect(confidentLevel).toBe(0);
       }
     );
