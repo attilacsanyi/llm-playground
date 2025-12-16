@@ -1,36 +1,28 @@
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { createLlmClient } from '../client';
-import { formatInstructions } from '../format';
-import { toneInstructions } from '../tone';
+import { createLlmClient } from '../../client';
+import { formatInstructions } from '../../format';
+import { toneInstructions } from '../../tone';
 
-import type { BaseLlmOptions } from '../types';
+import type { BaseLlmOptions } from '../../types';
 
-export type SignalFormsKBOptions = BaseLlmOptions;
+export type KnowledgeBaseOptions = BaseLlmOptions & {
+  knowledgeBase: string;
+  knowledgeBaseName?: string;
+};
 
 export const unrelatedQuestionAnswer = "I don't know";
 
-export const runSignalFormsKB = async (
-  options: SignalFormsKBOptions
+export const runKnowledgeBase = async (
+  options: KnowledgeBaseOptions
 ): Promise<string> => {
-  const { prompt, tone, format } = options;
+  const { prompt, tone, format, knowledgeBase } = options;
 
   const llm = createLlmClient();
 
-  // Use __dirname to resolve path relative to this file
-  // Works in both test (src) and production (dist) contexts
-  const signalFormsContent = readFileSync(
-    join(__dirname, '../../content/signal-forms.md'),
-    'utf8'
-  );
-
-  const knowledgeBase = signalFormsContent;
-
-  // Instruction to use knowledge from signal-forms.md
+  // Instruction to use knowledge base
   const knowledgeInstructions = `
     ## Role
-    You are a knowledgeable assistant and your knowledge base is the content of the file signal-forms.md.
+    You are a knowledgeable assistant who can answer questions about the knowledge base.
 
     ## Knowledge Base
     ${knowledgeBase}

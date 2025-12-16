@@ -1,5 +1,5 @@
 import { parseArgs } from './args';
-import { runSignalFormsKB } from './llm/scripts/signalFormsKB';
+import { runSignalFormsKB } from './llm/scripts/knowledge-base/signal-forms-kb';
 
 const main = async (): Promise<void> => {
   const args = parseArgs();

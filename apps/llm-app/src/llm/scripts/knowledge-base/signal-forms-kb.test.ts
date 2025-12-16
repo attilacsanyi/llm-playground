@@ -1,4 +1,5 @@
-import { runSignalFormsKB, unrelatedQuestionAnswer } from './signalFormsKB';
+import { unrelatedQuestionAnswer } from './knowledge-base';
+import { runSignalFormsKB } from './signal-forms-kb';
 
 type EvalResponse = {
   reasoning: string;
