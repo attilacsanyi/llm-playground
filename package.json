@@ -7,6 +7,7 @@
     "migrate:run": "npx nx migrate --run-migrations",
     "build": "nx affected:build",
     "test": "nx affected:test",
+    "tdd": "pnpm test --watch",
     "lint": "nx affected:lint --fix",
     "prepare": "husky",
     "postinstall": "husky",
