@@ -41,14 +41,14 @@ export const runSignalFormsKB = async (
 
     ## Response structure constraints
 
-    Your response have to contain the following parts in this order:
+    Your response has to contain the following parts with no extra text, comments, or markdown, exactly in this shape and keys order:
 
-    1. reasoning: A short 1-2 sentence explanation on why you made this answer
-    2. answer: The answer to the user's question
-    3. confidentLevel: number between 0 and 1 which represents how certain you are if you know the answer
+    1. reasoning: short 1-2 sentence explanation
+    2. answer: the answer to the user question
+    3. confidentLevel: number between 0 and 1
 
     ### Rules and edge cases
-    1. If your answer was ${unrelatedQuestionAnswer} then you should return 0 confidence level
+    1. Use 0 as the confidence level only when your answer is exactly "${unrelatedQuestionAnswer}". Do not use 0 for any other answer.
   `;
 
   const systemMessageContent = `
