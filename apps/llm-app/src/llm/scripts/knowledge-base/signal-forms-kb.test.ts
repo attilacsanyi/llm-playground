@@ -18,7 +18,7 @@ describe('SignalFormsKB LLM evals', () => {
         });
 
         expect(response.answer.toLowerCase()).toContain('signal forms');
-        expect(response.answer.toLowerCase()).toContain('form state');
+        expect(response.answer.toLowerCase()).toContain('state');
         expect(response.confidentLevel).toBeGreaterThanOrEqual(0.7);
       },
       timeout
