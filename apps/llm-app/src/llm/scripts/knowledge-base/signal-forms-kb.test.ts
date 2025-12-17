@@ -1,8 +1,6 @@
 import { unrelatedQuestionAnswer } from './knowledge-base';
 import { runSignalFormsKB } from './signal-forms-kb';
 
-const timeout = 60000;
-
 describe('SignalFormsKB LLM evals', () => {
   describe('in-scope questions (about Signal Forms)', () => {
     it(
@@ -20,8 +18,7 @@ describe('SignalFormsKB LLM evals', () => {
         expect(response.answer.toLowerCase()).toContain('signal forms');
         expect(response.answer.toLowerCase()).toContain('state');
         expect(response.confidentLevel).toBeGreaterThanOrEqual(0.7);
-      },
-      timeout
+      }
     );
   });
 
@@ -40,8 +37,7 @@ describe('SignalFormsKB LLM evals', () => {
 
         expect(response.answer.trim()).toBe(unrelatedQuestionAnswer);
         expect(response.confidentLevel).toBe(0);
-      },
-      timeout
+      }
     );
   });
 });
