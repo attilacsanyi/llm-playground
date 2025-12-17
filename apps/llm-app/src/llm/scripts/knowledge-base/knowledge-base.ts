@@ -60,6 +60,29 @@ export const runKnowledgeBase = async (
 
     ## Knowledge Base
     ${knowledgeBase}
+
+    ## Examples
+
+    ### Confident Answer with full confidence
+    {
+      "reasoning": "Your reasoning for the answer.",
+      "answer": "Your answer found in the knowledge base.",
+      "confidentLevel": 1
+    },
+
+    ### Confident Answer with partial confidence
+    {
+      "reasoning": "Your reasoning for the answer.",
+      "answer": "Your answer found in the knowledge base but you are not fully confident about it.",
+      "confidentLevel": 0.7
+    }
+
+    ### Unconfident Answer with no confidence
+    {
+      "reasoning": "Your reasoning for the answer.",
+      "answer": "Your answer that is not found in the knowledge base.",
+      "confidentLevel": 0
+    }
   `;
 
   const systemMessageContent = `
