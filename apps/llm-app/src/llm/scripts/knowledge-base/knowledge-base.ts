@@ -1,21 +1,55 @@
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import { z } from 'zod';
 import { createLlmClient } from '../../client';
-import { formatInstructions } from '../../format';
 import { toneInstructions } from '../../tone';
-
 import type { BaseLlmOptions } from '../../types';
 
-export type KnowledgeBaseOptions = BaseLlmOptions & {
+export const unrelatedQuestionAnswer = "I don't know";
+
+type KnowledgeBaseOptions = BaseLlmOptions & {
   knowledgeBase: string;
   knowledgeBaseName?: string;
 };
 
-export const unrelatedQuestionAnswer = "I don't know";
+const describeField = (text: string) => text.trim().replace(/^\s+/gm, '');
+
+const knowledgeBaseSchema = z
+  .object({
+    reasoning: z.string().min(1).describe('The reasoning for the answer'),
+    answer: z
+      .string()
+      .min(1)
+      .describe(
+        describeField(`
+      The answer to the user question.
+
+      Rules:
+      - Just answer the question based on the knowledge base
+      - If the question is not related to the knowledge base, say this exactly: "${unrelatedQuestionAnswer}"
+    `)
+      ),
+    confidentLevel: z
+      .number()
+      .min(0)
+      .max(1)
+      .describe(
+        describeField(`
+        The confidence level of the answer.
+
+        Rules:
+        - The confidence level should be a valid number between 0 and 1
+        - Use 0 as the confidence level only when your answer is exactly "${unrelatedQuestionAnswer}". Do not use 0 for any other answer.
+      `)
+      ),
+  })
+  .describe('The knowledge base response JSON schema');
+
+export type KnowledgeBaseResponse = z.infer<typeof knowledgeBaseSchema>;
 
 export const runKnowledgeBase = async (
   options: KnowledgeBaseOptions
-): Promise<string> => {
-  const { prompt, tone, format, knowledgeBase } = options;
+): Promise<KnowledgeBaseResponse> => {
+  const { prompt, tone, knowledgeBase } = options;
 
   const llm = createLlmClient();
 
@@ -26,21 +60,6 @@ export const runKnowledgeBase = async (
 
     ## Knowledge Base
     ${knowledgeBase}
-
-    ## Response with edge cases
-    1. Just answer the question based on the knowledge base
-    2. If the question is not related to the knowledge base, say this exactly: "${unrelatedQuestionAnswer}"
-
-    ## Response structure constraints
-
-    Your response has to contain the following parts with no extra text, comments, or markdown, exactly in this shape and keys order:
-
-    1. reasoning: short 1-2 sentence explanation
-    2. answer: the answer to the user question
-    3. confidentLevel: number between 0 and 1
-
-    ### Rules and edge cases
-    1. Use 0 as the confidence level only when your answer is exactly "${unrelatedQuestionAnswer}". Do not use 0 for any other answer.
   `;
 
   const systemMessageContent = `
@@ -48,12 +67,21 @@ ${knowledgeInstructions}
 
 ${toneInstructions[tone]}
 
-${formatInstructions[format]}
 `.trim();
 
   const systemMessage = new SystemMessage(systemMessageContent);
   const userPrompt = new HumanMessage(prompt);
 
-  const response = await llm.invoke([systemMessage, userPrompt]);
-  return String(response.content);
+  const structuredLlm = llm.withStructuredOutput(knowledgeBaseSchema);
+  try {
+    const response = await structuredLlm.invoke([systemMessage, userPrompt]);
+    return response;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(
+        `Failed to get structured response from LLM: ${error.message}. `
+      );
+    }
+    throw error;
+  }
 };

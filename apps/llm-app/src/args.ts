@@ -6,7 +6,6 @@ import { prettifyError, z } from 'zod';
  * CLI arguments schema
  */
 const argsSchema = z.object({
-  format: z.enum(['json', 'xml', 'yml']).default('json'),
   tone: z.enum(['grumpy', 'sceptic', 'positive']).default('positive'),
   prompt: z.string().min(1, 'Prompt is required'),
 });
@@ -31,13 +30,6 @@ export const parseArgs = (): Args => {
         });
       }
     )
-    .option('format', {
-      alias: 'f',
-      type: 'string',
-      choices: ['json', 'xml', 'yml'],
-      default: 'json',
-      description: 'Specify the LLM response format',
-    })
     .option('tone', {
       alias: 't',
       type: 'string',
@@ -54,7 +46,6 @@ export const parseArgs = (): Args => {
 
   // Validate with Zod
   const result = argsSchema.safeParse({
-    format: argv.format,
     tone: argv.tone,
     prompt: argv.prompt,
   });

@@ -40,7 +40,6 @@ pnpm nx serve llm-app --args="'Random user contact card including just the follo
 The application accepts the following arguments:
 
 - **`<prompt>`** (required): The prompt to send to the LLM
-- **`--format, -f`** (optional): Specify the LLM response format. Choices: `json` (default), `xml`, `yml`
 - **`--tone, -t`** (optional): Specify the LLM response tone. Choices: `grumpy`, `sceptic`, `positive` (default)
 
 #### Getting Help
@@ -61,7 +60,7 @@ The application will:
 
 - Connect to Ollama running at `http://localhost:11434`
 - Use the `gpt-oss:20b` model for text generation
-- Process your prompt and return a response in the specified format and tone
+- Process your prompt and return a response in the specified tone
 
 ### Changing the Model
 

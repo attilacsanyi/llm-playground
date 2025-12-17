@@ -3,22 +3,20 @@ import { runSignalFormsKB } from './llm/scripts/knowledge-base/signal-forms-kb';
 
 const main = async (): Promise<void> => {
   const args = parseArgs();
-  const { format, tone, prompt } = args;
+  const { tone, prompt } = args;
 
   try {
     console.log('🤖 LangChain.js with Ollama');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
     console.log(`📝 Prompt: ${prompt}\n`);
-    console.log(`📋 Format: ${format}`);
     console.log(`🎭 Tone: ${tone}`);
     console.log();
 
-    const content = await runSignalFormsKB({ prompt, tone, format });
+    const content = await runSignalFormsKB({ prompt, tone });
 
-    console.log(`💬 Response (${format}):`);
+    console.log(`💬 Response:`);
     console.log(content);
-    console.log();
   } catch (error) {
     if (error instanceof Error) {
       console.error('❌ Error:', error.message);
