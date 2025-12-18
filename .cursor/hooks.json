@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "hooks": {
+    // "beforeReadFile": [
+    //   {
+    //     "command": "./debug.sh"
+    //   }
+    // ],
+    // "beforeSubmitPrompt": [
+    //   {
+    //     "command": "bun run .cursor/hooks/before-submit-prompt.ts"
+    //   }
+    // ],
+    "beforeShellExecution": [
+      {
+        "command": "bun run .cursor/hooks/before-shell-execution.ts"
+      }
+    ]
+    // "afterFileEdit": [
+    //   {
+    //     "command": "bun run .cursor/hooks/after-file-edit.ts"
+    //   }
+    // ]
+  }
+}
