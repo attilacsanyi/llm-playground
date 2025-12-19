@@ -32,7 +32,7 @@ pnpm nx serve llm-app --args="'Your prompt here'"
 #### Example with Options
 
 ```sh
-pnpm nx serve llm-app --args="'Random user contact card including just the following keys name and email and age. Not include any comment.',--f=yml,--t=sceptic"
+pnpm nx serve llm-app --args="'Random user contact card including just the following keys name and email and age. Not include any comment.',--t=sceptic"
 ```
 
 #### Command Line Arguments
