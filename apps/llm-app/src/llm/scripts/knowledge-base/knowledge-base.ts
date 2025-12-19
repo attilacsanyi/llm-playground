@@ -6,9 +6,15 @@ import type { BaseLlmOptions } from '../../types';
 
 export const unrelatedQuestionAnswer = "I don't know";
 
+export type KnowledgeBaseExample = {
+  humanMessage: string;
+  aiMessage: KnowledgeBaseResponse;
+};
+
 type KnowledgeBaseOptions = BaseLlmOptions & {
   knowledgeBase: string;
   knowledgeBaseName?: string;
+  knowledgeBaseExamples?: KnowledgeBaseExample[];
 };
 
 const describeField = (text: string) => text.trim().replace(/^\s+/gm, '');
@@ -49,9 +55,27 @@ export type KnowledgeBaseResponse = z.infer<typeof knowledgeBaseSchema>;
 export const runKnowledgeBase = async (
   options: KnowledgeBaseOptions
 ): Promise<KnowledgeBaseResponse> => {
-  const { prompt, tone, knowledgeBase } = options;
+  const { prompt, tone, knowledgeBase, knowledgeBaseExamples } = options;
 
   const llm = createLlmClient();
+
+  // Format few-shot examples as text for system message if provided
+  const fewShotExamplesText =
+    knowledgeBaseExamples && knowledgeBaseExamples.length > 0
+      ? knowledgeBaseExamples
+          .map(({ humanMessage, aiMessage }, index) => {
+            const humanContent = humanMessage;
+            const aiContent = JSON.stringify(aiMessage, null, 2);
+            return `### Example ${index + 1}
+
+**HumanMessage:**
+${humanContent}
+
+**AIMessage:**
+${aiContent}`;
+          })
+          .join('\n\n')
+      : '';
 
   // Instruction to use knowledge base
   const knowledgeInstructions = `
@@ -60,28 +84,10 @@ export const runKnowledgeBase = async (
 
     ## Knowledge Base
     ${knowledgeBase}
-
-    ## Examples
-
-    ### Confident Answer with full confidence
-    {
-      "reasoning": "Your reasoning for the answer.",
-      "answer": "Your answer found in the knowledge base.",
-      "confidentLevel": 1
-    },
-
-    ### Confident Answer with partial confidence
-    {
-      "reasoning": "Your reasoning for the answer.",
-      "answer": "Your answer found in the knowledge base but you are not fully confident about it.",
-      "confidentLevel": 0.7
-    }
-
-    ### Unconfident Answer with no confidence
-    {
-      "reasoning": "Your reasoning for the answer.",
-      "answer": "Your answer that is not found in the knowledge base.",
-      "confidentLevel": 0
+    ${
+      fewShotExamplesText
+        ? `\n    ## Examples\n\n    ${fewShotExamplesText}`
+        : ''
     }
   `;
 
