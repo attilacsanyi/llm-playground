@@ -1,4 +1,9 @@
-import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import {
+  AIMessage,
+  BaseMessage,
+  HumanMessage,
+  SystemMessage,
+} from '@langchain/core/messages';
 import { z } from 'zod';
 import { createLlmClient } from '../../client';
 import { toneInstructions } from '../../tone';
@@ -7,8 +12,8 @@ import type { BaseLlmOptions } from '../../types';
 export const unrelatedQuestionAnswer = "I don't know";
 
 export type KnowledgeBaseExample = {
-  humanMessage: string;
-  aiMessage: KnowledgeBaseResponse;
+  humanMessage: HumanMessage;
+  aiMessage: AIMessage;
 };
 
 type KnowledgeBaseOptions = BaseLlmOptions & {
@@ -21,7 +26,20 @@ const describeField = (text: string) => text.trim().replace(/^\s+/gm, '');
 
 const knowledgeBaseSchema = z
   .object({
-    reasoning: z.string().min(1).describe('The reasoning for the answer'),
+    reasoning: z
+      .string()
+      .min(1)
+      .describe(
+        describeField(`
+      The reasoning for the answer. This field is REQUIRED and must always be included.
+
+      Rules:
+      - Always provide your reasoning process for how you arrived at the answer
+      - Explain why you chose this answer based on the knowledge base
+      - If the question is unrelated, explain why it's unrelated to the knowledge base
+      - This field must never be omitted
+    `)
+      ),
     answer: z
       .string()
       .min(1)
@@ -59,24 +77,6 @@ export const runKnowledgeBase = async (
 
   const llm = createLlmClient();
 
-  // Format few-shot examples as text for system message if provided
-  const fewShotExamplesText =
-    knowledgeBaseExamples && knowledgeBaseExamples.length > 0
-      ? knowledgeBaseExamples
-          .map(({ humanMessage, aiMessage }, index) => {
-            const humanContent = humanMessage;
-            const aiContent = JSON.stringify(aiMessage, null, 2);
-            return `### Example ${index + 1}
-
-**HumanMessage:**
-${humanContent}
-
-**AIMessage:**
-${aiContent}`;
-          })
-          .join('\n\n')
-      : '';
-
   // Instruction to use knowledge base
   const knowledgeInstructions = `
     ## Role
@@ -84,11 +84,6 @@ ${aiContent}`;
 
     ## Knowledge Base
     ${knowledgeBase}
-    ${
-      fewShotExamplesText
-        ? `\n    ## Examples\n\n    ${fewShotExamplesText}`
-        : ''
-    }
   `;
 
   const systemMessageContent = `
@@ -98,12 +93,15 @@ ${toneInstructions[tone]}
 
 `.trim();
 
-  const systemMessage = new SystemMessage(systemMessageContent);
-  const userPrompt = new HumanMessage(prompt);
-
   const structuredLlm = llm.withStructuredOutput(knowledgeBaseSchema);
+  const messages = constructMessages(
+    new SystemMessage(systemMessageContent),
+    new HumanMessage(prompt),
+    knowledgeBaseExamples || []
+  );
+
   try {
-    const response = await structuredLlm.invoke([systemMessage, userPrompt]);
+    const response = await structuredLlm.invoke(messages);
     return response;
   } catch (error) {
     if (error instanceof Error) {
@@ -113,4 +111,27 @@ ${toneInstructions[tone]}
     }
     throw error;
   }
+};
+
+const constructMessages = (
+  systemMessage: SystemMessage,
+  humanMessage: HumanMessage,
+  knowledgeBaseExamples: KnowledgeBaseExample[]
+): BaseMessage[] => {
+  const messages: BaseMessage[] = [];
+
+  // 1. Add the system message
+  messages.push(systemMessage);
+
+  // 2. Inject few-shot examples if provided
+  if (knowledgeBaseExamples.length > 0) {
+    for (const { humanMessage, aiMessage } of knowledgeBaseExamples) {
+      messages.push(humanMessage, aiMessage);
+    }
+  }
+
+  // 3. Add the human message at the end
+  messages.push(humanMessage);
+
+  return messages;
 };
