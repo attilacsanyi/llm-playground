@@ -2,7 +2,7 @@
 
 # LlmPlayground
 
-A Node.js application using LangChain.js with Ollama to run language models locally.
+A Node.js application using LangChain.js with Ollama to run language models locally. The application provides a knowledge base Q&A system that can answer questions based on structured knowledge bases with structured output responses.
 
 ## Prerequisites
 
@@ -14,10 +14,24 @@ A Node.js application using LangChain.js with Ollama to run language models loca
    ollama serve
    ```
 
-3. **Pull the gpt-oss:20b model**:
+3. **Pull the gpt-oss:20b model** (or configure a different model via environment variables):
+
    ```sh
    ollama pull gpt-oss:20b
    ```
+
+   > **Note:** The application uses structured output, which requires a model that supports tool calls (like `gpt-oss:20b`). Not all Ollama models support this feature.
+
+4. **Optional: Configure environment variables**:
+
+   Create `apps/llm-app/.env.local` to customize settings:
+
+   ```sh
+   OLLAMA_BASE_URL=http://localhost:11434
+   OLLAMA_MODEL=gpt-oss:20b
+   ```
+
+   If not provided, the application uses these defaults.
 
 ## Usage
 
@@ -26,14 +40,20 @@ A Node.js application using LangChain.js with Ollama to run language models loca
 Once Ollama is running and the model is pulled, you can run the application with a prompt:
 
 ```sh
-pnpm nx serve llm-app --args="'Your prompt here'"
+pnpm nx serve llm-app --args="'Your question here'"
 ```
 
 #### Example with Options
 
 ```sh
-pnpm nx serve llm-app --args="'Random user contact card including just the following keys name and email and age. Not include any comment.',--t=sceptic"
+pnpm nx serve llm-app --args="'How do I create a form model with signal()?',--t=sceptic"
 ```
+
+The application uses a knowledge base (currently Signal Forms documentation) to answer questions. It returns structured responses with:
+
+- **reasoning**: The reasoning process for the answer
+- **answer**: The answer to your question
+- **confidentLevel**: A confidence score between 0 and 1
 
 #### Command Line Arguments
 
@@ -58,21 +78,32 @@ pnpm nx serve llm-app --args="-h"
 
 The application will:
 
-- Connect to Ollama running at `http://localhost:11434`
-- Use the `gpt-oss:20b` model for text generation
-- Process your prompt and return a response in the specified tone
+- Connect to Ollama running at `http://localhost:11434` (or the URL specified in `OLLAMA_BASE_URL`)
+- Use the configured model (default: `gpt-oss:20b`) for text generation
+- Query the knowledge base (Signal Forms documentation) to answer your question
+- Return a structured JSON response with reasoning, answer, and confidence level in the specified tone
 
 ### Changing the Model
 
-To use a different Ollama model, update the `model` property in `apps/llm-app/src/main.ts`:
+To use a different Ollama model, you can either:
 
-```typescript
-const llm = new Ollama({
-  model: 'your-model-name', // Change this to any model you have installed
-  baseUrl: 'http://localhost:11434',
-  // ...
-});
-```
+1. **Set an environment variable** (recommended):
+
+   Create or update `apps/llm-app/.env.local`:
+
+   ```sh
+   OLLAMA_MODEL=your-model-name
+   ```
+
+2. **Use the default configuration**:
+
+   The default model is `gpt-oss:20b`. Make sure you've pulled the model:
+
+   ```sh
+   ollama pull your-model-name
+   ```
+
+> **Important:** The application uses structured output (via `withStructuredOutput()`), which requires a model that supports tool calls. Not all Ollama models support this feature. If you use a model without tool call support, the application may fail. The `gpt-oss:20b` model supports tool calls and is recommended.
 
 ## Development
 
