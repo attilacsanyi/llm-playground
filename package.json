@@ -11,10 +11,13 @@
     "lint": "nx affected:lint --fix",
     "prepare": "husky",
     "postinstall": "husky",
-    "lint-staged": "lint-staged --config lint-staged.config.mjs"
+    "lint-staged": "lint-staged --config lint-staged.config.mjs",
+    "init-kb": "bun run apps/llm-app/src/llm/vector-store/init-kb.ts"
   },
   "private": true,
   "dependencies": {
+    "@langchain/core": "1.1.2",
+    "@langchain/ollama": "1.0.3",
     "dotenv": "17.2.3",
     "langchain": "1.2.1",
     "yargs": "18.0.0",

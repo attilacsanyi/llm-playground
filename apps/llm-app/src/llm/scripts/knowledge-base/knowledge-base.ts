@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { createLlmClient } from '../../client';
 import { toneInstructions } from '../../tone';
 import type { BaseLlmOptions } from '../../types';
+import { DocumentRetriever } from '../../vector-store/retriever';
 
 export const unrelatedQuestionAnswer = "I don't know";
 
@@ -17,8 +18,8 @@ export type KnowledgeBaseExample = {
 };
 
 type KnowledgeBaseOptions = BaseLlmOptions & {
-  knowledgeBase: string;
-  knowledgeBaseName?: string;
+  knowledgeBaseRetriever: DocumentRetriever;
+  knowledgeBaseName: string;
   knowledgeBaseExamples?: KnowledgeBaseExample[];
 };
 
@@ -73,9 +74,15 @@ export type KnowledgeBaseResponse = z.infer<typeof knowledgeBaseSchema>;
 export const runKnowledgeBase = async (
   options: KnowledgeBaseOptions
 ): Promise<KnowledgeBaseResponse> => {
-  const { prompt, tone, knowledgeBase, knowledgeBaseExamples } = options;
+  const { prompt, tone, knowledgeBaseRetriever, knowledgeBaseExamples } =
+    options;
 
   const llm = createLlmClient();
+
+  // Retrieve relevant chunks from the knowledge base retriever
+  const relevantDocs = await knowledgeBaseRetriever.retrieve(prompt);
+  const knowledgeBase =
+    knowledgeBaseRetriever.formatDocumentsForPrompt(relevantDocs);
 
   // Instruction to use knowledge base
   const knowledgeInstructions = `

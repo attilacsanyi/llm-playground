@@ -50,3 +50,7 @@ test-output
 .env
 .env.local
 .env*.local
+
+
+# LLM specific files
+.vector-stores

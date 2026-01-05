@@ -14,6 +14,10 @@ const envSchema = z.object({
     .string('OLLAMA_MODEL must be a string')
     .default('gpt-oss:20b'),
 
+  OLLAMA_EMBEDDINGS_MODEL: z
+    .string('OLLAMA_EMBEDDINGS_MODEL must be a string')
+    .default('nomic-embed-text'),
+
   // Node environment
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
