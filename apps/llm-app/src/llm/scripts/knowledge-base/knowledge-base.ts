@@ -74,8 +74,13 @@ export type KnowledgeBaseResponse = z.infer<typeof knowledgeBaseSchema>;
 export const runKnowledgeBase = async (
   options: KnowledgeBaseOptions
 ): Promise<KnowledgeBaseResponse> => {
-  const { prompt, tone, knowledgeBaseRetriever, knowledgeBaseExamples } =
-    options;
+  const {
+    prompt,
+    tone,
+    knowledgeBaseRetriever,
+    knowledgeBaseName,
+    knowledgeBaseExamples,
+  } = options;
 
   const llm = createLlmClient();
 
@@ -87,9 +92,9 @@ export const runKnowledgeBase = async (
   // Instruction to use knowledge base
   const knowledgeInstructions = `
     ## Role
-    You are a knowledgeable assistant who can answer questions about the knowledge base.
+    You are a knowledgeable assistant who can answer questions about the ${knowledgeBaseName} knowledge base.
 
-    ## Knowledge Base
+    ## Knowledge Base: ${knowledgeBaseName}
     ${knowledgeBase}
   `;
 
