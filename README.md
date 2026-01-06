@@ -24,7 +24,7 @@ A Node.js application using LangChain.js with Ollama to run language models loca
 
 4. **Optional: Configure environment variables**:
 
-   Create `apps/llm-app/.env.local` to customize settings:
+   Create `apps/signal-forms-kb-app/.env.local` to customize settings:
 
    ```sh
    OLLAMA_BASE_URL=http://localhost:11434
@@ -40,13 +40,13 @@ A Node.js application using LangChain.js with Ollama to run language models loca
 Once Ollama is running and the model is pulled, you can run the application with a prompt:
 
 ```sh
-pnpm nx serve llm-app --args="'Your question here'"
+pnpm nx serve signal-forms-kb-app --args="'Your question here'"
 ```
 
 #### Example with Options
 
 ```sh
-pnpm nx serve llm-app --args="'How do I create a form model with signal()?',--t=sceptic"
+pnpm nx serve signal-forms-kb-app --args="'How do I create a form model with signal()?',--t=skeptic"
 ```
 
 The application uses a knowledge base (currently Signal Forms documentation) to answer questions. It returns structured responses with:
@@ -60,20 +60,20 @@ The application uses a knowledge base (currently Signal Forms documentation) to 
 The application accepts the following arguments:
 
 - **`<prompt>`** (required): The prompt to send to the LLM
-- **`--tone, -t`** (optional): Specify the LLM response tone. Choices: `grumpy`, `sceptic`, `positive` (default)
+- **`--tone, -t`** (optional): Specify the LLM response tone. Choices: `grumpy`, `skeptic`, `positive` (default)
 
 #### Getting Help
 
 To see all available options and their descriptions, you can view the help:
 
 ```sh
-pnpm nx serve llm-app --args="--help"
+pnpm nx serve signal-forms-kb-app --args="--help"
 ```
 
 Or using the short form:
 
 ```sh
-pnpm nx serve llm-app --args="-h"
+pnpm nx serve signal-forms-kb-app --args="-h"
 ```
 
 The application will:
@@ -89,7 +89,7 @@ To use a different Ollama model, you can either:
 
 1. **Set an environment variable** (recommended):
 
-   Create or update `apps/llm-app/.env.local`:
+   Create or update `apps/signal-forms-kb-app/.env.local`:
 
    ```sh
    OLLAMA_MODEL=your-model-name
@@ -110,12 +110,12 @@ To use a different Ollama model, you can either:
 ### Build
 
 ```sh
-pnpm nx build llm-app
+pnpm nx build signal-forms-kb-app
 ```
 
 ### Available Commands
 
 ```sh
 # Show all available targets for the project
-pnpm nx show project llm-app
+pnpm nx show project signal-forms-kb-app
 ```

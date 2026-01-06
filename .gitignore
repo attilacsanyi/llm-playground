@@ -54,3 +54,6 @@ test-output
 
 # LLM specific files
 .vector-stores
+
+# AI
+.cursor

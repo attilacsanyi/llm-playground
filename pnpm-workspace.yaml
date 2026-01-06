@@ -1,9 +1,11 @@
 packages:
-  - apps/*
-
+  - 'apps/*'
+  - 'libs/env'
+  - 'libs/vector-store'
+  - 'libs/knowledge-base'
+  - 'libs/llm-client'
 autoInstallPeers: true
-
 onlyBuiltDependencies:
   - '@swc/core'
-  - esbuild
-  - nx
+  - 'esbuild'
+  - 'nx'

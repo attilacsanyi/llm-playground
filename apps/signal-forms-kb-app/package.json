@@ -1,0 +1,127 @@
+{
+  "name": "@llm-playground/signal-forms-kb-app",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "platform": "node",
+          "outputPath": "apps/signal-forms-kb-app/dist",
+          "format": [
+            "cjs"
+          ],
+          "bundle": false,
+          "main": "apps/signal-forms-kb-app/src/main.ts",
+          "tsConfig": "apps/signal-forms-kb-app/tsconfig.app.json",
+          "assets": [
+            "apps/signal-forms-kb-app/src/assets",
+            {
+              "input": "apps/signal-forms-kb-app/src/content",
+              "glob": "**/*",
+              "output": "apps/signal-forms-kb-app/src/content"
+            }
+          ],
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        },
+        "configurations": {
+          "development": {},
+          "production": {
+            "generateLockfile": true,
+            "esbuildOptions": {
+              "sourcemap": false,
+              "outExtension": {
+                ".js": ".js"
+              }
+            }
+          }
+        }
+      },
+      "prune-lockfile": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "executor": "@nx/js:prune-lockfile",
+        "outputs": [
+          "{workspaceRoot}/apps/signal-forms-kb-app/dist/package.json",
+          "{workspaceRoot}/apps/signal-forms-kb-app/dist/pnpm-lock.yaml"
+        ],
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "copy-workspace-modules": {
+        "dependsOn": [
+          "build"
+        ],
+        "cache": true,
+        "outputs": [
+          "{workspaceRoot}/apps/signal-forms-kb-app/dist/workspace_modules"
+        ],
+        "executor": "@nx/js:copy-workspace-modules",
+        "options": {
+          "buildTarget": "build"
+        }
+      },
+      "prune": {
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "executor": "nx:noop"
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "signal-forms-kb-app:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "signal-forms-kb-app:build:development"
+          },
+          "production": {
+            "buildTarget": "signal-forms-kb-app:build:production"
+          }
+        }
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      },
+      "docker:build": {
+        "dependsOn": [
+          "build",
+          "prune"
+        ]
+      }
+    },
+    "name": "signal-forms-kb-app"
+  },
+  "dependencies": {
+    "@langchain/core": "1.1.2",
+    "@langchain/ollama": "1.0.3",
+    "@llm/llm-client": "workspace:*",
+    "@llm/env": "workspace:*",
+    "@llm/knowledge-base": "workspace:*",
+    "@llm/vector-store": "workspace:*",
+    "zod": "4.3.5"
+  }
+}

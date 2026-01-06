@@ -41,7 +41,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/llm-app-e2e/**/*"]
+      "exclude": ["apps/signal-forms-kb-app-e2e/**/*"]
     },
     {
       "plugin": "@nx/docker",
@@ -63,6 +63,11 @@
     },
     "test": {
       "dependsOn": ["^build"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   }
 }

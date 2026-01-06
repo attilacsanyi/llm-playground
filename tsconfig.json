@@ -4,7 +4,19 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/llm-app"
+      "path": "./apps/signal-forms-kb-app"
+    },
+    {
+      "path": "./libs/env"
+    },
+    {
+      "path": "./libs/vector-store"
+    },
+    {
+      "path": "./libs/knowledge-base"
+    },
+    {
+      "path": "./libs/llm-client"
     }
   ]
 }

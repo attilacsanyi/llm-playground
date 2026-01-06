@@ -1,0 +1,26 @@
+{
+  "name": "@llm/vector-store",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@llm-playground/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "nx": {
+    "name": "vector-store"
+  },
+  "dependencies": {
+    "@langchain/core": "1.1.2",
+    "@langchain/ollama": "1.0.3",
+    "@llm/env": "workspace:*",
+    "tslib": "2.3.0"
+  }
+}
